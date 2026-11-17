@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${isEditing ? 'Edit Peer Profile | Skill Swap' : 'Register as a Peer | Skill Swap'}">Register as a Peer | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-9">
+                <div class="card card-hover p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="avatar-circle mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.4rem;">
+                            <i class="bi bi-person-badge"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1" th:text="${isEditing ? 'Update Your Peer Profile' : 'Register as a Peer'}">
+                            Register as a Peer
+                        </h3>
+                        <p class="text-muted small">
+                            Tell the community what skills you can <strong>teach</strong> and what skills you want to <strong>learn</strong>.
+                        </p>
+                    </div>
+
+                    <form th:action="@{/peers/register}" th:object="${peerDto}" method="post">
+                        <!-- Profile Headline -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Professional Headline <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{headline}" class="form-control"
+                                   placeholder="e.g. Senior Java Full Stack Developer & Open Source Mentor" required>
+                            <div class="form-text">A short 1-line summary that appears on your peer card.</div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('headline')}" th:errors="*{headline}"></div>
+                        </div>
+
+                        <!-- Experience, Location, Availability -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Years of Experience</label>
+                                <input type="number" th:field="*{experienceYears}" min="0" max="60" class="form-control" placeholder="e.g. 5">
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('experienceYears')}" th:errors="*{experienceYears}"></div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Location / Timezone</label>
+                                <input type="text" th:field="*{location}" class="form-control" placeholder="e.g. Remote / New York (EST)">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label fw-semibold">Availability</label>
+                                <input type="text" th:field="*{availability}" class="form-control" placeholder="e.g. Weekdays 6PM - 9PM EST">
+                            </div>
+                        </div>
+
+                        <!-- About / Experience Background -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">About Your Experience & Background</label>
+                            <textarea th:field="*{aboutExperience}" class="form-control" rows="3"
+                                      placeholder="Share your practical experience, projects, or background so peers know what to expect..."></textarea>
+                        </div>
+
+                        <hr class="my-4">
+
+                        <!-- SECTION 1: Skills I Can TEACH (Offered Skills) -->
+                        <div class="p-3 bg-light rounded border border-primary-subtle mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-mortarboard-fill text-primary fs-4"></i>
+                                <h5 class="fw-bold mb-0 text-primary">Skills I Can Teach (Offered Skills)</h5>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                List the skills, tools, or subjects you are ready to teach other peers.
+                            </p>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Skills You Can Teach <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{teachingSkills}" class="form-control"
+                                       placeholder="e.g. Java, Spring Boot, Microservices, REST APIs (comma separated)" required>
+                                <div class="form-text">Separate multiple skills with commas.</div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('teachingSkills')}" th:errors="*{teachingSkills}"></div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Primary Category</label>
+                                    <select th:field="*{teachingCategory}" class="form-select">
+                                        <option th:each="cat : ${allCategories}" th:value="${cat}" th:text="${cat.displayName}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Your Teaching Proficiency</label>
+                                    <select th:field="*{teachingLevel}" class="form-select">
+                                        <option value="EXPERT">Expert (Extensive industry experience)</option>
+                                        <option value="ADVANCED" selected>Advanced (Strong practical knowledge)</option>
+                                        <option value="INTERMEDIATE">Intermediate (Solid fundamentals)</option>
+                                        <option value="BEGINNER">Beginner (Foundational)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: Skills I Want to LEARN (Desired Skills) -->
+                        <div class="p-3 bg-light rounded border border-warning-subtle mb-4">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <i class="bi bi-lightbulb-fill text-warning-emphasis fs-4"></i>
+                                <h5 class="fw-bold mb-0 text-warning-emphasis">Skills I Want to Learn (Desired Skills)</h5>
+                            </div>
+                            <p class="text-muted small mb-3">
+                                List the skills you want to learn from other peers in exchange.
+                            </p>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Skills You Want to Learn <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{learningSkills}" class="form-control"
+                                       placeholder="e.g. UI/UX Design, Figma, Spanish, Python (comma separated)" required>
+                                <div class="form-text">Separate multiple skills with commas.</div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('learningSkills')}" th:errors="*{learningSkills}"></div>
+                            </div>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Target Category</label>
+                                    <select th:field="*{learningCategory}" class="form-select">
+                                        <option th:each="cat : ${allCategories}" th:value="${cat}" th:text="${cat.displayName}"></option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label fw-semibold">Current Skill Level</label>
+                                    <select th:field="*{learningLevel}" class="form-select">
+                                        <option value="BEGINNER" selected>Beginner (Starting from scratch)</option>
+                                        <option value="INTERMEDIATE">Intermediate (Know basics, want to level up)</option>
+                                        <option value="ADVANCED">Advanced (Seeking expert review/nuances)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Buttons -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a th:href="@{/peers}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold">
+                                <i class="bi bi-check2-circle me-1"></i>
+                                <span th:text="${isEditing ? 'Save Changes' : 'Publish Peer Profile'}">Publish Peer Profile</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

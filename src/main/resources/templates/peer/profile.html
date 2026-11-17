@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${peer.user.name + ' - Peer Profile | Skill Swap'}">Peer Profile | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row g-4">
+            <!-- Left / Main Column: Profile Details -->
+            <div class="col-lg-8">
+                <!-- Header Card -->
+                <div class="card card-hover p-4 p-md-5 mb-4">
+                    <div class="d-flex flex-column flex-md-row align-items-md-center gap-4">
+                        <div class="avatar-circle avatar-circle-lg flex-shrink-0" th:text="${peer.user.initials}">AJ</div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h3 class="fw-bold mb-0" th:text="${peer.user.name}">Alex Johnson</h3>
+                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill">Active Peer</span>
+                            </div>
+                            <h5 class="text-primary mb-2" th:text="${peer.headline}">Senior Full Stack Java & Cloud Architect</h5>
+                            <div class="d-flex flex-wrap gap-3 text-muted small">
+                                <span><i class="bi bi-geo-alt me-1 text-danger"></i><span th:text="${peer.location}">New York, USA</span></span>
+                                <span><i class="bi bi-briefcase me-1 text-primary"></i><span th:text="${peer.experienceYears + ' Years of Experience'}">7 Years</span></span>
+                                <span><i class="bi bi-envelope me-1 text-info"></i><span th:text="${peer.user.email}">alex@skillswap.com</span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- About & Experience -->
+                <div class="card card-hover p-4 mb-4">
+                    <h5 class="fw-bold mb-3"><i class="bi bi-card-text text-primary me-2"></i>About & Experience</h5>
+                    <p class="text-secondary" th:text="${peer.aboutExperience != null && !peer.aboutExperience.isBlank() ? peer.aboutExperience : peer.user.bio}">
+                        Experienced software engineer passionate about helping others level up their technical skills.
+                    </p>
+                    <div class="bg-light p-3 rounded mt-3">
+                        <div class="fw-semibold text-dark small mb-1"><i class="bi bi-clock me-1 text-primary"></i>Preferred Availability:</div>
+                        <div class="text-muted small" th:text="${peer.availability}">Flexible (Evenings & Weekends)</div>
+                    </div>
+                </div>
+
+                <!-- Skills Can Teach (Offered) -->
+                <div class="card card-hover p-4 mb-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-primary">
+                            <i class="bi bi-mortarboard-fill me-2"></i>Skills I Can Teach (Offered)
+                        </h5>
+                        <span class="badge bg-primary text-white" th:text="${peer.teachingSkills.size()} + ' Offered'">3 Offered</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6" th:each="skill : ${peer.teachingSkills}">
+                            <div class="p-3 border rounded bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold mb-0" th:text="${skill.name}">Java</h6>
+                                    <span class="badge" th:classappend="${skill.level.badgeClass}" th:text="${skill.level.label}">Expert</span>
+                                </div>
+                                <span class="badge badge-cat mb-2" th:text="${skill.category.displayName}">Programming</span>
+                                <p class="text-muted small mb-3" th:text="${skill.description}">Hands-on coding, Spring Boot architecture, testing.</p>
+                                <a th:href="@{'/bookings/new'(mentorId=${peer.user.id}, skill=${skill.name})}"
+                                   class="btn btn-sm btn-outline-primary w-100">
+                                    <i class="bi bi-calendar-plus me-1"></i> Book for this Skill
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills Want to Learn (Desired) -->
+                <div class="card card-hover p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-warning-emphasis">
+                            <i class="bi bi-lightbulb-fill me-2"></i>Skills I Want to Learn (Desired)
+                        </h5>
+                        <span class="badge bg-warning text-dark" th:text="${peer.learningSkills.size()} + ' Wanted'">2 Wanted</span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6" th:each="skill : ${peer.learningSkills}">
+                            <div class="p-3 border rounded bg-white h-100">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h6 class="fw-bold mb-0" th:text="${skill.name}">UI/UX Design</h6>
+                                    <span class="badge badge-cat" th:text="${skill.category.displayName}">Design</span>
+                                </div>
+                                <p class="text-muted small mb-0" th:text="${skill.description}">Looking for a mentor to teach wireframing and user research.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Quick Booking Card -->
+            <div class="col-lg-4">
+                <div class="card card-hover p-4 sticky-top" style="top: 2rem;">
+                    <h5 class="fw-bold mb-3">Schedule a Swap Session</h5>
+                    <p class="text-muted small mb-4">
+                        Connect 1-on-1 with <strong th:text="${peer.user.name}">Alex</strong> for an interactive peer learning session.
+                    </p>
+
+                    <div class="d-grid gap-2 mb-3">
+                        <a th:href="@{'/bookings/new'(mentorId=${peer.user.id})}" class="btn btn-primary py-2 fw-semibold">
+                            <i class="bi bi-calendar-plus me-2"></i> Book Learning Session
+                        </a>
+                    </div>
+
+                    <div class="border-top pt-3 mt-2 text-muted small">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-shield-check text-success fs-5"></i>
+                            <span>Peer verified skill exchange</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <i class="bi bi-camera-video text-primary fs-5"></i>
+                            <span>Google Meet / Zoom integration</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-warning fs-5"></i>
+                            <span>Unique Session ID for tracking</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

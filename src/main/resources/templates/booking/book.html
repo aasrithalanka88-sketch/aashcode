@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book a Skill Swap Session | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <!-- Mentor Summary Card -->
+                <div class="card card-hover p-4 mb-4 border-primary">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="avatar-circle avatar-circle-lg" th:text="${mentor.initials}">M</div>
+                        <div>
+                            <span class="badge bg-primary text-white mb-1">Selected Mentor</span>
+                            <h4 class="fw-bold mb-0" th:text="${mentor.name}">Mentor Name</h4>
+                            <p class="text-muted small mb-1" th:text="${mentorPeer != null ? mentorPeer.headline : 'Active Peer'}">Mentor Headline</p>
+                            <small class="text-secondary" th:if="${mentorPeer != null}">
+                                <i class="bi bi-clock me-1 text-primary"></i>
+                                Availability: <span th:text="${mentorPeer.availability}">Flexible</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Booking Form Card -->
+                <div class="card card-hover p-4 p-md-5">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <i class="bi bi-calendar-plus text-primary fs-3"></i>
+                        <div>
+                            <h4 class="fw-bold mb-0">Schedule Your Skill Session</h4>
+                            <p class="text-muted small mb-0">Upon booking, a unique <strong>Session ID</strong> will be generated for tracking.</p>
+                        </div>
+                    </div>
+                    <hr class="mb-4">
+
+                    <form th:action="@{/bookings/new}" th:object="${bookingDto}" method="post">
+                        <!-- Hidden Mentor ID -->
+                        <input type="hidden" th:field="*{mentorId}">
+
+                        <!-- Skill to Learn -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Skill You Want to Learn / Practice <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-mortarboard"></i></span>
+                                <input type="text" th:field="*{skillName}" class="form-control"
+                                       placeholder="e.g. Java, Spring Boot, UI/UX Design, Spanish..." required>
+                            </div>
+                            <div class="form-text">Choose from the skills this mentor teaches or enter a specific sub-topic.</div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('skillName')}" th:errors="*{skillName}"></div>
+                        </div>
+
+                        <!-- Date and Time Row -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Date of Session <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-calendar-event"></i></span>
+                                    <input type="date" th:field="*{scheduledDate}" class="form-control" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('scheduledDate')}" th:errors="*{scheduledDate}"></div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Time of Session <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    <input type="time" th:field="*{scheduledTime}" class="form-control" required>
+                                </div>
+                                <div class="text-danger small mt-1" th:if="${#fields.hasErrors('scheduledTime')}" th:errors="*{scheduledTime}"></div>
+                            </div>
+                        </div>
+
+                        <!-- Duration & Meeting Platform -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Session Duration <span class="text-danger">*</span></label>
+                                <select th:field="*{durationMinutes}" class="form-select">
+                                    <option value="30">30 minutes</option>
+                                    <option value="45">45 minutes</option>
+                                    <option value="60" selected>60 minutes (Recommended)</option>
+                                    <option value="90">90 minutes</option>
+                                    <option value="120">120 minutes (Deep Dive)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold">Preferred Meeting Platform</label>
+                                <select th:field="*{meetingPlatform}" class="form-select">
+                                    <option value="Google Meet" selected>Google Meet</option>
+                                    <option value="Zoom">Zoom</option>
+                                    <option value="Microsoft Teams">Microsoft Teams</option>
+                                    <option value="Discord">Discord Voice/Screen Share</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Topic & Questions Notes -->
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Topic Agenda & What You Wish to Cover <span class="text-danger">*</span></label>
+                            <textarea th:field="*{topicNotes}" class="form-control" rows="4"
+                                      placeholder="Briefly describe what you'd like to work on or learn during this session (e.g. Setting up Spring Boot with JPA, code review of repository layer, or conversational language practice)..." required></textarea>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('topicNotes')}" th:errors="*{topicNotes}"></div>
+                        </div>
+
+                        <!-- Notice Box -->
+                        <div class="alert alert-light border small text-muted mb-4">
+                            <i class="bi bi-info-circle-fill text-primary me-2"></i>
+                            After booking, you will receive a unique <strong>Session ID</strong> (e.g. <code>SS-XXXX-XXXX</code>) which you can use to track or cancel your session at any time.
+                        </div>
+
+                        <!-- Buttons -->
+                        <div class="d-flex gap-3 justify-content-end">
+                            <a th:href="@{/peers}" class="btn btn-outline-secondary px-4">Cancel</a>
+                            <button type="submit" class="btn btn-primary px-5 py-2 fw-semibold">
+                                <i class="bi bi-check2-circle me-1"></i> Confirm Booking & Generate Session ID
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

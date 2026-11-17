@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Skill Matches | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <!-- Search Header -->
+        <div class="text-center mb-5">
+            <span class="badge bg-primary-subtle text-primary px-3 py-2 rounded-pill fw-semibold mb-2">
+                🎯 Instant Skill Matchmaking
+            </span>
+            <h2 class="fw-bold mb-2">Find Peers Teaching the Skills You Want</h2>
+            <p class="text-muted mx-auto" style="max-width: 620px;">
+                Type any skill you wish to learn. We'll instantly match you with registered peers who offer to teach it.
+            </p>
+
+            <!-- Search Form -->
+            <div class="row justify-content-center mt-4">
+                <div class="col-lg-7">
+                    <form th:action="@{/skills/search}" method="get" class="d-flex bg-white p-2 rounded-pill shadow-sm border">
+                        <input type="text" name="q" class="form-control border-0 rounded-pill px-4"
+                               placeholder="e.g. Java, Python, Spanish, Figma, Guitar..."
+                               th:value="${query}">
+                        <button type="submit" class="btn btn-primary rounded-pill px-4">
+                            <i class="bi bi-search me-1"></i> Search Matches
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Quick Pill Suggestions -->
+            <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+                <span class="small text-muted align-self-center">Popular:</span>
+                <a th:each="skill : ${popularSkills}"
+                   th:href="@{/skills/search(q=${skill})}"
+                   class="badge bg-light text-dark border px-3 py-2 text-decoration-none rounded-pill"
+                   th:text="${skill}">Java</a>
+            </div>
+        </div>
+
+        <!-- Search Results Count -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold mb-0">
+                <span th:if="${query != null && !query.isBlank()}">
+                    Matching Mentors for "<span class="text-primary" th:text="${query}">Java</span>"
+                </span>
+                <span th:if="${query == null || query.isBlank()}">
+                    All Available Peer Mentors
+                </span>
+                <span class="badge bg-primary rounded-pill ms-2" th:text="${matchCount}">3</span>
+            </h5>
+            <a th:href="@{/skills/wanted}" class="text-decoration-none small text-muted">
+                Looking for skills others want to learn? <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+
+        <!-- Matching Peers List -->
+        <div class="row g-4" th:if="${!matchingPeers.isEmpty()}">
+            <div class="col-md-6 col-lg-4" th:each="peer : ${matchingPeers}">
+                <div class="card card-hover h-100 p-4 d-flex flex-column">
+                    <div class="d-flex align-items-start gap-3 mb-3">
+                        <div class="avatar-circle flex-shrink-0" th:text="${peer.user.initials}">AJ</div>
+                        <div class="flex-grow-1 overflow-hidden">
+                            <h5 class="fw-bold mb-0 text-truncate" th:text="${peer.user.name}">Alex Johnson</h5>
+                            <div class="text-primary small fw-semibold text-truncate" th:text="${peer.headline}">Senior Java Architect</div>
+                            <small class="text-muted d-block mt-1">
+                                <i class="bi bi-geo-alt me-1"></i><span th:text="${peer.location}">New York</span> &bull;
+                                <i class="bi bi-briefcase me-1"></i><span th:text="${peer.experienceYears + ' yrs exp'}">7 yrs</span>
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Skills Offered -->
+                    <div class="mb-3">
+                        <div class="small fw-bold text-primary mb-1">
+                            <i class="bi bi-mortarboard-fill me-1"></i> Offers to Teach:
+                        </div>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span th:each="s : ${peer.teachingSkills}"
+                                  class="badge badge-teach"
+                                  th:classappend="${query != null && s.name.toLowerCase().contains(query.toLowerCase()) ? 'border-primary fw-bold' : ''}">
+                                <span th:text="${s.name}">Java</span>
+                                <span class="badge bg-light text-dark ms-1" style="font-size: 0.65rem;" th:text="${s.level.label}">Expert</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- What They Want in Exchange -->
+                    <div class="mb-4">
+                        <div class="small fw-bold text-warning-emphasis mb-1">
+                            <i class="bi bi-arrow-repeat me-1"></i> Wants in Return:
+                        </div>
+                        <div class="d-flex flex-wrap gap-1">
+                            <span th:each="s : ${peer.learningSkills}" class="badge badge-learn" th:text="${s.name}">UI/UX</span>
+                        </div>
+                    </div>
+
+                    <!-- Action CTA -->
+                    <div class="mt-auto pt-3 border-top d-flex gap-2">
+                        <a th:href="@{'/peers/' + ${peer.id}}" class="btn btn-sm btn-outline-secondary flex-grow-1">
+                            View Profile
+                        </a>
+                        <a th:href="@{'/bookings/new'(mentorId=${peer.user.id}, skill=${query != null ? query : (peer.teachingSkills.isEmpty() ? '' : peer.teachingSkills[0].name)})}"
+                           class="btn btn-sm btn-primary flex-grow-1">
+                            <i class="bi bi-calendar-plus me-1"></i> Book Session
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No Results Found -->
+        <div class="text-center py-5 my-5" th:if="${matchingPeers.isEmpty()}">
+            <i class="bi bi-search text-muted fs-1 mb-3"></i>
+            <h4 class="fw-bold">No mentors currently teaching "<span th:text="${query}">Skill</span>"</h4>
+            <p class="text-muted">You could be the first to request it in the Want-to-Learn Directory!</p>
+            <a th:href="@{/peers/register}" class="btn btn-primary mt-2">
+                <i class="bi bi-plus-circle me-1"></i> Add to Desired Skills
+            </a>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

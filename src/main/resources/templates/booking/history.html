@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Booking History Dashboard | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <!-- Dashboard Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col-md-8">
+                <h2 class="fw-bold mb-1">
+                    <i class="bi bi-calendar-check text-primary me-2"></i> Session Booking History
+                </h2>
+                <p class="text-muted mb-0">
+                    Track all peer learning sessions you have booked as a learner or hosted as a mentor.
+                </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                <a th:href="@{/bookings/cancel}" class="btn btn-outline-danger me-2">
+                    <i class="bi bi-x-circle me-1"></i> Cancel by Session ID
+                </a>
+                <a th:href="@{/peers}" class="btn btn-primary">
+                    <i class="bi bi-plus-lg me-1"></i> Book New Session
+                </a>
+            </div>
+        </div>
+
+        <!-- Metric Stat Cards -->
+        <div class="row g-3 mb-4 text-center">
+            <div class="col-6 col-md-3">
+                <div class="card p-3 border-0 shadow-sm bg-white">
+                    <span class="text-muted small">Total Sessions</span>
+                    <h3 class="fw-bold mb-0 text-dark" th:text="${totalBookings}">0</h3>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3 border-0 shadow-sm bg-white">
+                    <span class="text-muted small">Confirmed / Upcoming</span>
+                    <h3 class="fw-bold mb-0 text-success" th:text="${confirmedCount}">0</h3>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3 border-0 shadow-sm bg-white">
+                    <span class="text-muted small">Completed</span>
+                    <h3 class="fw-bold mb-0 text-primary" th:text="${completedCount}">0</h3>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="card p-3 border-0 shadow-sm bg-white">
+                    <span class="text-muted small">Cancelled</span>
+                    <h3 class="fw-bold mb-0 text-danger" th:text="${cancelledCount}">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <ul class="nav nav-pills mb-4" id="bookingTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active fw-semibold" id="learner-tab" data-bs-toggle="pill" data-bs-target="#learner" type="button" role="tab">
+                    <i class="bi bi-mortarboard me-1"></i> Sessions as Learner
+                    <span class="badge bg-white text-primary ms-1" th:text="${learnerBookings.size()}">0</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link fw-semibold" id="mentor-tab" data-bs-toggle="pill" data-bs-target="#mentor" type="button" role="tab">
+                    <i class="bi bi-person-video3 me-1"></i> Sessions as Mentor / Host
+                    <span class="badge bg-white text-primary ms-1" th:text="${mentorBookings.size()}">0</span>
+                </button>
+            </li>
+        </ul>
+
+        <!-- Tab Contents -->
+        <div class="tab-content" id="bookingTabsContent">
+            <!-- TAB 1: SESSIONS AS LEARNER -->
+            <div class="tab-pane fade show active" id="learner" role="tabpanel">
+                <div class="card card-hover border-0 overflow-hidden" th:if="${!learnerBookings.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Skill / Topic</th>
+                                    <th>Mentor</th>
+                                    <th>Scheduled Time</th>
+                                    <th>Platform</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${learnerBookings}">
+                                    <td>
+                                        <code class="fw-bold text-primary fs-6" th:text="${b.sessionId}">SS-2026-ABCD</code>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold" th:text="${b.skillName}">Java</span>
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;" th:text="${b.topicNotes}">Agenda notes</div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;" th:text="${b.mentor.initials}">M</span>
+                                            <div>
+                                                <div class="fw-semibold small" th:text="${b.mentor.name}">Mentor Name</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;" th:text="${b.mentor.email}">mentor@email.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-semibold" th:text="${#temporals.format(b.scheduledDateTime, 'MMM dd, yyyy')}">Jan 01, 2026</div>
+                                        <div class="text-muted small" th:text="${#temporals.format(b.scheduledDateTime, 'hh:mm a')} + ' (' + ${b.durationMinutes} + 'm)'">6:00 PM (60m)</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border" th:text="${b.meetingPlatform}">Google Meet</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${b.status.badgeClass}" th:text="${b.status.label}">Confirmed</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-1 justify-content-end" th:if="${b.cancellable}">
+                                            <a th:href="@{'/bookings/confirmed/' + ${b.sessionId}}" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <form th:action="@{'/bookings/cancel/' + ${b.sessionId}}" method="post" onsubmit="return confirm('Are you sure you want to cancel session ' + [[${b.sessionId}]] + '?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Cancel this Session">
+                                                    <i class="bi bi-x-circle me-1"></i> Cancel
+                                                </button>
+                                            </form>
+                                        </div>
+                                        <span class="small text-muted" th:if="${!b.cancellable}">
+                                            <span th:if="${b.status.name() == 'CANCELLED'}">Cancelled</span>
+                                            <span th:if="${b.status.name() == 'COMPLETED'}">Completed</span>
+                                        </span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="text-center py-5 bg-white rounded-3 border" th:if="${learnerBookings.isEmpty()}">
+                    <i class="bi bi-calendar-x text-muted fs-1 mb-3"></i>
+                    <h5 class="fw-bold">No sessions booked as a learner yet</h5>
+                    <p class="text-muted small">Explore available peer mentors and book your first skill exchange session.</p>
+                    <a th:href="@{/peers}" class="btn btn-primary mt-2">Find a Peer Mentor</a>
+                </div>
+            </div>
+
+            <!-- TAB 2: SESSIONS AS MENTOR -->
+            <div class="tab-pane fade" id="mentor" role="tabpanel">
+                <div class="card card-hover border-0 overflow-hidden" th:if="${!mentorBookings.isEmpty()}">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Session ID</th>
+                                    <th>Skill Being Taught</th>
+                                    <th>Learner</th>
+                                    <th>Scheduled Time</th>
+                                    <th>Platform</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="b : ${mentorBookings}">
+                                    <td>
+                                        <code class="fw-bold text-primary fs-6" th:text="${b.sessionId}">SS-2026-ABCD</code>
+                                    </td>
+                                    <td>
+                                        <span class="fw-semibold" th:text="${b.skillName}">Java</span>
+                                        <div class="small text-muted text-truncate" style="max-width: 200px;" th:text="${b.topicNotes}">Agenda notes</div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;" th:text="${b.learner.initials}">L</span>
+                                            <div>
+                                                <div class="fw-semibold small" th:text="${b.learner.name}">Learner Name</div>
+                                                <div class="text-muted" style="font-size: 0.75rem;" th:text="${b.learner.email}">learner@email.com</div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="small fw-semibold" th:text="${#temporals.format(b.scheduledDateTime, 'MMM dd, yyyy')}">Jan 01, 2026</div>
+                                        <div class="text-muted small" th:text="${#temporals.format(b.scheduledDateTime, 'hh:mm a')} + ' (' + ${b.durationMinutes} + 'm)'">6:00 PM (60m)</div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark border" th:text="${b.meetingPlatform}">Google Meet</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge" th:classappend="${b.status.badgeClass}" th:text="${b.status.label}">Confirmed</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="d-flex gap-1 justify-content-end" th:if="${b.cancellable}">
+                                            <a th:href="@{'/bookings/confirmed/' + ${b.sessionId}}" class="btn btn-sm btn-outline-secondary" title="View Details">
+                                                <i class="bi bi-eye"></i>
+                                            </a>
+                                            <form th:action="@{'/bookings/cancel/' + ${b.sessionId}}" method="post" onsubmit="return confirm('Cancel this session as host?');">
+                                                <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                            </form>
+                                        </div>
+                                        <span class="small text-muted" th:if="${!b.cancellable}" th:text="${b.status.label}"></span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="text-center py-5 bg-white rounded-3 border" th:if="${mentorBookings.isEmpty()}">
+                    <i class="bi bi-calendar-event text-muted fs-1 mb-3"></i>
+                    <h5 class="fw-bold">No sessions scheduled with you yet</h5>
+                    <p class="text-muted small">Register as a peer or update your offered skills to receive swap requests from learners!</p>
+                    <a th:href="@{/peers/register}" class="btn btn-primary mt-2">Update Peer Skills</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

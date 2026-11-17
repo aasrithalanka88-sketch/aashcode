@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill Swap | Peer-to-Peer Skill Exchange Platform</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero-gradient text-center">
+            <div class="container py-4">
+                <span class="badge bg-white text-primary px-3 py-2 rounded-pill fw-semibold mb-3 shadow-sm">
+                    🚀 Peer-to-Peer Knowledge Sharing Platform
+                </span>
+                <h1 class="display-4 fw-bold mb-3">Teach What You Love.<br>Learn What You Need.</h1>
+                <p class="lead text-light mb-4 mx-auto" style="max-width: 680px;">
+                    Exchange skills directly with passionate peers worldwide. Teach Java, learn Figma, swap Spanish for Guitar — no high costs, just mutual growth and collaborative learning.
+                </p>
+
+                <!-- Search Bar -->
+                <div class="row justify-content-center mb-4">
+                    <div class="col-md-8 col-lg-6">
+                        <form th:action="@{/skills/search}" method="get" class="d-flex bg-white p-2 rounded-pill shadow">
+                            <input type="text" name="q" class="form-control border-0 rounded-pill px-4" placeholder="What skill do you want to learn? (e.g. Java, Python, Spanish)..." required>
+                            <button type="submit" class="btn btn-primary rounded-pill px-4">
+                                <i class="bi bi-search me-1"></i> Find Mentors
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="d-flex justify-content-center gap-3">
+                    <a th:href="@{/peers}" class="btn btn-light btn-lg px-4 shadow-sm fw-semibold">
+                        <i class="bi bi-people-fill text-primary me-2"></i> Browse All Peers
+                    </a>
+                    <a th:href="@{/peers/register}" class="btn btn-outline-light btn-lg px-4 fw-semibold">
+                        <i class="bi bi-plus-circle me-2"></i> Register as a Peer
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Platform Stats -->
+        <div class="container mb-5">
+            <div class="row g-4 text-center">
+                <div class="col-6 col-md-3">
+                    <div class="card card-hover p-3">
+                        <i class="bi bi-people text-primary fs-1 mb-2"></i>
+                        <h3 class="fw-bold mb-0" th:text="${totalPeers}">5</h3>
+                        <p class="text-muted small mb-0">Active Registered Peers</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-hover p-3">
+                        <i class="bi bi-mortarboard text-success fs-1 mb-2"></i>
+                        <h3 class="fw-bold mb-0" th:text="${totalOfferedSkills}">12</h3>
+                        <p class="text-muted small mb-0">Skills Offered (Teach)</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-hover p-3">
+                        <i class="bi bi-lightbulb text-warning fs-1 mb-2"></i>
+                        <h3 class="fw-bold mb-0" th:text="${totalWantedSkills}">10</h3>
+                        <p class="text-muted small mb-0">Skills Wanted (Learn)</p>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="card card-hover p-3">
+                        <i class="bi bi-calendar2-check text-info fs-1 mb-2"></i>
+                        <h3 class="fw-bold mb-0" th:text="${totalBookings}">3</h3>
+                        <p class="text-muted small mb-0">Sessions Swapped</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Popular Skills Directory Highlights -->
+        <section class="container mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1">Trending Skills Offered by Peers</h3>
+                    <p class="text-muted mb-0">Connect directly with active mentors teaching these in-demand topics.</p>
+                </div>
+                <a th:href="@{/skills/wanted}" class="btn btn-outline-primary">
+                    View Want-to-Learn Directory <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <a th:each="skillName : ${popularSkillNames}"
+                   th:href="@{/skills/search(q=${skillName})}"
+                   class="btn btn-light border rounded-pill px-3 py-2 d-flex align-items-center gap-2 text-decoration-none shadow-sm">
+                    <i class="bi bi-check2-circle text-primary"></i>
+                    <span class="fw-medium text-dark" th:text="${skillName}">Java</span>
+                </a>
+            </div>
+        </section>
+
+        <!-- Featured Peers Section -->
+        <section class="container mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h3 class="fw-bold mb-1">Featured Peer Mentors</h3>
+                    <p class="text-muted mb-0">Ready to swap skills and share knowledge with you.</p>
+                </div>
+                <a th:href="@{/peers}" class="btn btn-outline-primary">
+                    View All Peers <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+
+            <div class="row g-4">
+                <div class="col-md-6 col-lg-4" th:each="peer : ${featuredPeers}">
+                    <div class="card card-hover h-100 p-4">
+                        <div class="d-flex align-items-center gap-3 mb-3">
+                            <div class="avatar-circle" th:text="${peer.user.initials}">AJ</div>
+                            <div>
+                                <h5 class="fw-bold mb-0" th:text="${peer.user.name}">Alex Johnson</h5>
+                                <small class="text-muted" th:text="${peer.location}">New York, USA</small>
+                            </div>
+                        </div>
+
+                        <p class="card-text text-secondary small mb-3" th:text="${peer.headline}">
+                            Senior Full Stack Java & Cloud Architect
+                        </p>
+
+                        <!-- Teaches -->
+                        <div class="mb-2">
+                            <span class="badge badge-teach me-1 mb-1" th:each="s : ${peer.teachingSkills}">
+                                <i class="bi bi-mortarboard-fill me-1"></i><span th:text="${s.name}">Java</span>
+                            </span>
+                        </div>
+
+                        <!-- Wants to learn -->
+                        <div class="mb-3">
+                            <span class="badge badge-learn me-1 mb-1" th:each="s : ${peer.learningSkills}">
+                                <i class="bi bi-lightbulb-fill me-1"></i><span th:text="${s.name}">UI/UX</span>
+                            </span>
+                        </div>
+
+                        <div class="mt-auto pt-3 border-top d-flex justify-content-between align-items-center">
+                            <a th:href="@{'/peers/' + ${peer.id}}" class="btn btn-sm btn-outline-secondary">View Profile</a>
+                            <a th:href="@{'/bookings/new'(mentorId=${peer.user.id})}" class="btn btn-sm btn-primary">
+                                <i class="bi bi-calendar-plus me-1"></i> Book Session
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- How It Works Section -->
+        <section class="bg-white py-5 border-top">
+            <div class="container text-center">
+                <h3 class="fw-bold mb-4">How Skill Swap Works</h3>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <div class="avatar-circle mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.4rem;">1</div>
+                            <h5 class="fw-bold">Create Your Peer Profile</h5>
+                            <p class="text-muted small">Register with your name and email. Specify what skills you can teach and what you want to learn.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <div class="avatar-circle mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.4rem;">2</div>
+                            <h5 class="fw-bold">Find Matches & Book Sessions</h5>
+                            <p class="text-muted small">Search the directory or browse peers. Pick a mutually possible time and generate your unique Session ID.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3">
+                            <div class="avatar-circle mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.4rem;">3</div>
+                            <h5 class="fw-bold">Track & Manage Swaps</h5>
+                            <p class="text-muted small">Check your complete booking history dashboard or cancel anytime with your unique Session ID.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-white sticky-top">
+    <div class="container">
+        <a class="navbar-brand" th:href="@{/}">
+            <i class="bi bi-arrow-left-right text-primary fs-3"></i>
+            <span>Skill<span class="text-dark">Swap</span></span>
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/peers}">
+                        <i class="bi bi-people me-1"></i> View All Peers
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/skills/wanted}">
+                        <i class="bi bi-journal-bookmark me-1"></i> Want to Learn Directory
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/skills/search}">
+                        <i class="bi bi-search me-1"></i> Search Skill Matches
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger" th:href="@{/bookings/cancel}">
+                        <i class="bi bi-x-circle me-1"></i> Cancel Session
+                    </a>
+                </li>
+            </ul>
+
+            <ul class="navbar-nav align-items-center">
+                <!-- Demo Login Quick Switcher -->
+                <li class="nav-item dropdown me-2">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-lightning-charge-fill text-warning me-1"></i> Demo Accounts
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><h6 class="dropdown-header">Switch Logged-in User (1-Click)</h6></li>
+                        <li><a class="dropdown-item" th:href="@{/demo-login/1}"><strong>Alex Johnson</strong> (Java & Spring)</a></li>
+                        <li><a class="dropdown-item" th:href="@{/demo-login/2}"><strong>Maya Lin</strong> (UI/UX & Figma)</a></li>
+                        <li><a class="dropdown-item" th:href="@{/demo-login/3}"><strong>David Chen</strong> (Python & ML)</a></li>
+                        <li><a class="dropdown-item" th:href="@{/demo-login/4}"><strong>Elena Gomez</strong> (Spanish Coach)</a></li>
+                        <li><a class="dropdown-item" th:href="@{/demo-login/5}"><strong>Marcus Miller</strong> (Guitar & Music)</a></li>
+                    </ul>
+                </li>
+
+                <!-- Logged in state -->
+                <li class="nav-item" th:if="${currentUser != null}">
+                    <a class="btn btn-sm btn-outline-primary me-2" th:href="@{/bookings/history}">
+                        <i class="bi bi-calendar-check me-1"></i> Booking History
+                    </a>
+                </li>
+                <li class="nav-item" th:if="${currentUser != null}">
+                    <a class="btn btn-sm btn-primary me-2" th:href="@{/peers/register}">
+                        <i class="bi bi-person-badge me-1"></i>
+                        <span th:text="${currentPeer != null ? 'Edit Peer Profile' : 'Register as Peer'}">Register as Peer</span>
+                    </a>
+                </li>
+                <li class="nav-item dropdown" th:if="${currentUser != null}">
+                    <a class="nav-link dropdown-toggle d-flex align-items-center gap-2" href="#" role="button" data-bs-toggle="dropdown">
+                        <span class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.85rem;" th:text="${currentUser.initials}">U</span>
+                        <span class="fw-semibold" th:text="${currentUser.name}">User</span>
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end shadow-sm">
+                        <li><span class="dropdown-item-text text-muted small" th:text="${currentUser.email}">user@email.com</span></li>
+                        <li th:if="${currentPeer != null}">
+                            <a class="dropdown-item" th:href="@{'/peers/' + ${currentPeer.id}}">
+                                <i class="bi bi-person-circle me-1"></i> View My Public Profile
+                            </a>
+                        </li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li>
+                            <a class="dropdown-item text-danger" th:href="@{/logout}">
+                                <i class="bi bi-box-arrow-right me-1"></i> Logout
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Guest state -->
+                <li class="nav-item" th:if="${currentUser == null}">
+                    <a class="nav-link" th:href="@{/login}">Log In</a>
+                </li>
+                <li class="nav-item" th:if="${currentUser == null}">
+                    <a class="btn btn-sm btn-primary" th:href="@{/register}">Sign Up Free</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<footer th:fragment="footer" class="mt-auto">
+    <div class="container py-4">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <span class="fw-bold text-primary">Skill Swap</span> &copy; 2026. Peer-to-Peer Knowledge Exchange.
+                <div class="small text-muted">Exchange skills, empower peers, grow together.</div>
+            </div>
+            <div class="col-md-6 text-center text-md-end mt-3 mt-md-0">
+                <a th:href="@{/peers}" class="text-decoration-none text-muted me-3 small">Browse Peers</a>
+                <a th:href="@{/skills/wanted}" class="text-decoration-none text-muted me-3 small">Want to Learn</a>
+                <a th:href="@{/skills/search}" class="text-decoration-none text-muted me-3 small">Search Matches</a>
+                <a th:href="@{/bookings/cancel}" class="text-decoration-none text-danger small">Cancel Session</a>
+            </div>
+        </div>
+    </div>
+</footer>
+</html>

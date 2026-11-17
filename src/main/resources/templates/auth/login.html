@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | Skill Swap</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/custom.css}">
+</head>
+<body>
+    <nav th:replace="~{layout/navbar :: navbar}"></nav>
+    <div th:replace="~{layout/alerts :: alerts}"></div>
+
+    <main class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-5">
+                <div class="card card-hover p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <div class="avatar-circle mx-auto mb-3" style="width: 56px; height: 56px; font-size: 1.4rem;">
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </div>
+                        <h3 class="fw-bold mb-1">Welcome to Skill Swap</h3>
+                        <p class="text-muted small">Log in with your email address to continue</p>
+                    </div>
+
+                    <form th:action="@{/login}" th:object="${loginDto}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Email Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                <input type="email" th:field="*{email}" class="form-control" placeholder="name@example.com" required>
+                            </div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-lock"></i></span>
+                                <input type="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                            </div>
+                            <div class="text-danger small mt-1" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold">
+                            Log In to Skill Swap
+                        </button>
+                    </form>
+
+                    <div class="text-center mt-3">
+                        <span class="text-muted small">Don't have an account? </span>
+                        <a th:href="@{/register}" class="text-primary fw-semibold small text-decoration-none">Sign Up Free</a>
+                    </div>
+
+                    <!-- 1-Click Demo Accounts -->
+                    <div class="mt-4 pt-3 border-top">
+                        <div class="text-center mb-2">
+                            <span class="badge bg-light text-secondary border">⚡ Quick 1-Click Demo Logins</span>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <a th:href="@{/demo-login/1}" class="btn btn-sm btn-outline-secondary text-start d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-person-fill text-primary me-2"></i>Alex Johnson</span>
+                                <span class="badge badge-teach">Teaches Java</span>
+                            </a>
+                            <a th:href="@{/demo-login/2}" class="btn btn-sm btn-outline-secondary text-start d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-person-fill text-success me-2"></i>Maya Lin</span>
+                                <span class="badge badge-teach">Teaches UI/UX</span>
+                            </a>
+                            <a th:href="@{/demo-login/4}" class="btn btn-sm btn-outline-secondary text-start d-flex justify-content-between align-items-center">
+                                <span><i class="bi bi-person-fill text-danger me-2"></i>Elena Gomez</span>
+                                <span class="badge badge-teach">Teaches Spanish</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer th:replace="~{layout/footer :: footer}"></footer>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
