@@ -1,5 +1,7 @@
 # 🤝 Skill Swap - Peer-to-Peer Skill Exchange Platform
 
+**Live Demo:** [https://aashcode-1.onrender.com/](https://aashcode-1.onrender.com/)
+
 **Skill Swap** is a complete, production-ready Java web application built on **Spring Boot 3**, **Spring Data JPA**, and **Thymeleaf**. It connects learners and mentors directly for reciprocal knowledge sharing—enabling users to teach what they excel at and learn what they desire.
 
 ---
