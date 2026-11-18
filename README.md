@@ -146,6 +146,14 @@ java/
 
 ## ⚡ How to Run the Application
 
+### Deploy to Render
+
+This is a Java/Spring Boot application, not a Node.js app, so a `node index.js`
+start command will not work. Render uses the included `Dockerfile` and
+`render.yaml` to build and run the application with Java 17. To deploy, create
+a new **Blueprint** in Render from this repository; Render will read
+`render.yaml` and use the `PORT` value it assigns to the web service.
+
 ### 1. Prerequisites
 - **Java Development Kit (JDK 17 or higher)** installed (e.g. Eclipse Temurin, Oracle JDK, or Amazon Corretto).
 - Optional: Apache Maven (if not using the Maven wrapper).
